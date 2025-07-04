@@ -1,0 +1,152 @@
+/* Dark mode styles to append to src/app/globals.css */
+
+.app.dark {
+  background-color: #0f172a;
+  color: #cbd5e1;
+}
+
+.app.dark .header {
+  border-bottom-color: rgba(34, 197, 94, 0.5);
+  background-color: #1e293b;
+  color: #cbd5e1;
+}
+
+.app.dark .header .logo {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.6);
+  color: white;
+}
+
+.app.dark .header .title-section h1 {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app.dark .header .connection-status {
+  opacity: 0.9;
+  color: #a3bffa;
+}
+
+.app.dark .nav-btn {
+  color: #cbd5e1;
+}
+
+.app.dark .nav-btn:hover {
+  background: rgba(34, 197, 94, 0.2);
+  transform: translateY(-1px);
+}
+
+.app.dark .nav-btn.active {
+  background: rgba(34, 197, 94, 0.4);
+  color: #22c55e;
+}
+
+.app.dark .header-actions .theme-toggle {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.app.dark .mobile-menu-btn {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.app.dark .mobile-nav {
+  background: rgba(15, 23, 42, 0.95);
+  border-top-color: rgba(34, 197, 94, 0.5);
+}
+
+.app.dark .mobile-nav-btn {
+  color: #cbd5e1;
+}
+
+.app.dark .mobile-nav-btn:hover {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.app.dark .mobile-nav-btn.active {
+  background: rgba(34, 197, 94, 0.4);
+  color: #22c55e;
+}
+
+.app.dark .main-content {
+  background-color: #1e293b;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  min-height: 100vh;
+  color: #cbd5e1;
+}
+
+.app.dark .graph-controls {
+  background-color: #334155;
+  border-radius: 12px;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.app.dark .control-btn {
+  color: #cbd5e1;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.app.dark .control-btn:hover {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.app.dark .control-btn.active {
+  background: rgba(34, 197, 94, 0.5);
+  color: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+}
+
+/* Exclude reports section from dark mode */
+.app.dark .reports-section {
+  background-color: transparent !important;
+  color: #1e293b !important;
+  border-color: transparent !important;
+}
+
+.app.dark .reports-section .top-card {
+  background-color: #fff !important;
+  border-color: #fca5a5 !important;
+}
+
+.app.dark .reports-section .critical-alerts {
+  border-color: #fca5a5 !important;
+}
+
+.app.dark .reports-section .critical-alerts .icon-circle {
+  background-color: #ef4444 !important;
+}
+
+.app.dark .reports-section .critical-text,
+.app.dark .reports-section .system-modes .mode-label,
+.app.dark .reports-section .system-modes .mode-value,
+.app.dark .reports-section .temp-title,
+.app.dark .reports-section .temp-values,
+.app.dark .reports-section .mode-sub-label {
+  color: #1e293b !important;
+}
+
+.app.dark .reports-section .system-modes .mode-item > div {
+  color: #334155 !important;
+}
+
+.app.dark .reports-section .temperature-cards .temp-card.red-bg-light {
+  background-color: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+}
+
+.app.dark .reports-section .temperature-cards .temp-card.green-bg-light {
+  background-color: #dcfce7 !important;
+  border-color: #bbf7d0 !important;
+}

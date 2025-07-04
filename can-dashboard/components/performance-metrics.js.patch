@@ -1,0 +1,507 @@
+const { currentData, history, alerts } = useData()
+
+  if (!currentData.measurement617 || !currentData.temp616) return null
+
+  const criticalCount = alerts.filter((alert) => alert.type === "critical").length
+=======
+import { useState, useEffect } from "react"
+
+function getRandomMotorSpeed() {
+  return Math.random() * 1000 // example range 0-1000 RPM
+}
+
+export default function PerformanceMetrics() {
+  const { currentData, history, alerts, isConnected } = useData()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!currentData.measurement617 || !currentData.temp616) return null
+
+  const criticalCount = alerts.filter((alert) => alert.type === "critical").length
+>>>>>>> REPLACE
+
+<<<<<<< SEARCH
+  return (
+    <div className="performance-metrics">
+      <div className="metrics-header">
+        <h3>Performance Metrics</h3>
+        <div className="overall-stats">
+          <div className="stat-item">
+            <span className="stat-label">Efficiency</span>
+            <span
+              className={`stat-value ${efficiencyScore > 80 ? "good" : efficiencyScore > 60 ? "warning" : "critical"}`}
+            >
+              {efficiencyScore.toFixed(0)}%
+            </span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Power</span>
+            <span className="stat-value">{powerConsumption.toFixed(2)} kW</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Critical</span>
+            {criticalCount > 0 ? (
+              <span className="stat-value critical">{criticalCount}</span>
+            ) : (
+              <span className="stat-value">0</span>
+            )}
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Warning</span>
+            {warningCount > 0 ? (
+              <span className="stat-value warning">{warningCount}</span>
+            ) : (
+              <span className="stat-value">0</span>
+            )}
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Info</span>
+            {infoCount > 0 ? (
+              <span className="stat-value info">{infoCount}</span>
+            ) : (
+              <span className="stat-value">0</span>
+            )}
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Healthy Sensors</span>
+            <span className="stat-value good">{healthySensors}/{totalSensors} Healthy</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="metrics-grid">
+        {metrics.map((metric) => {
+          const TrendIcon = getTrendIcon(metric.trend)
+          const trendColor = getTrendColor(metric.trend)
+          const IconComponent = metric.icon
+          // const percentage = (metric.value / metric.max) * 100
+
+          return (
+            <div key={metric.title} className="metric-card">
+              <div className="metric-header">
+                <div className="metric-icon" style={{ color: metric.color }}>
+                  <IconComponent size={20} />
+                </div>
+                <div className="metric-trend" style={{ color: trendColor }}>
+                  <TrendIcon size={16} />
+                  <span>{(Math.abs(metric.trend) ?? 0).toFixed(1)}%</span>
+                </div>
+              </div>
+
+              <div className="metric-content">
+                <h4>{metric.title}</h4>
+                <div className="metric-value">
+                  <span className="value">{(metric.value ?? 0).toFixed(1)}</span>
+                  <span className="unit">{metric.unit}</span>
+                </div>
+
+                <Odometer
+                  value={metric.value ?? 0}
+                  max={metric.max}
+                  unit={metric.unit}
+                  color={metric.color}
+                />
+
+                {/* Removed metric-range as odometer shows range visually */}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <style jsx>{`
+        .performance-metrics {
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+          border: 3px solid rgba(34, 197, 94, 0.2);
+          border-radius: 16px;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .metrics-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+
+        .metrics-header h3 {
+          margin: 0;
+          color: #22c55e;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+
+        .overall-stats {
+          display: flex;
+          gap: 2rem;
+        }
+
+        .stat-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.8rem;
+          opacity: 0.7;
+        }
+
+        .stat-value {
+          font-size: 1.2rem;
+          font-weight: 700;
+        }
+
+        .stat-value.good {
+          color: #22c55e;
+        }
+
+        .stat-value.warning {
+          color: #f59e0b;
+        }
+
+        .stat-value.critical {
+          color: #ef4444;
+        }
+
+        .metrics-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 1.5rem;
+        }
+
+        .metric-card {
+          background: rgba(255, 255, 255, 0.03);
+          border: 3px solid #C0C1EF;
+          border-radius: 12px;
+          padding: 1.25rem;
+          transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 35px rgba(34, 197, 94, 0.15);
+          border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .metric-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        .metric-icon {
+          padding: 0.5rem;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-trend {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.8rem;
+          font-weight: 600;
+        }
+
+        .metric-content h4 {
+          margin: 0 0 0.5rem 0;
+          font-size: 0.9rem;
+          opacity: 0.8;
+        }
+
+        .metric-value {
+          display: flex;
+          align-items: baseline;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .metric-value .value {
+          font-size: 1.8rem;
+          font-weight: 700;
+        }
+
+        .metric-value .unit {
+          font-size: 0.9rem;
+          opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+          .metrics-header {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          
+          .overall-stats {
+            justify-content: center;
+            gap: 1rem;
+          }
+          
+          .metrics-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+    </div>
+  )
+}
+=======
+  return (
+    <div className={`performance-metrics ${mounted ? "fade-in" : ""}`}>
+      <div className="metrics-header">
+        <h3>Performance Metrics</h3>
+        <div className="overall-stats">
+          <div className="stat-item">
+            <span className="stat-label">Efficiency</span>
+            <span
+              className={`stat-value ${efficiencyScore > 80 ? "good" : efficiencyScore > 60 ? "warning" : "critical"}`}
+            >
+              {efficiencyScore.toFixed(0)}%
+            </span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Power</span>
+            <span className="stat-value">{powerConsumption.toFixed(2)} kW</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Critical</span>
+            {criticalCount > 0 ? (
+              <span className="stat-value critical">{criticalCount}</span>
+            ) : (
+              <span className="stat-value">0</span>
+            )}
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Warning</span>
+            {warningCount > 0 ? (
+              <span className="stat-value warning">{warningCount}</span>
+            ) : (
+              <span className="stat-value">0</span>
+            )}
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Info</span>
+            {infoCount > 0 ? (
+              <span className="stat-value info">{infoCount}</span>
+            ) : (
+              <span className="stat-value">0</span>
+            )}
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Healthy Sensors</span>
+            <span className="stat-value good">{healthySensors}/{totalSensors} Healthy</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="metrics-grid">
+        {metrics.map((metric) => {
+          const TrendIcon = getTrendIcon(metric.trend)
+          const trendColor = getTrendColor(metric.trend)
+          const IconComponent = metric.icon
+
+          return (
+            <div key={metric.title} className="metric-card">
+              <div className="metric-header">
+                <div className="metric-icon" style={{ color: metric.color }}>
+                  <IconComponent size={20} className="icon-animated" />
+                </div>
+                <div className="metric-trend" style={{ color: trendColor }}>
+                  <TrendIcon size={16} className="icon-animated" />
+                  <span>{(Math.abs(metric.trend) ?? 0).toFixed(1)}%</span>
+                </div>
+              </div>
+
+          <div className="metric-content">
+            <h4>{metric.title}</h4>
+            <div className="metric-value">
+              <span className="value">{(metric.value ?? 0).toFixed(1)}</span>
+              <span className="unit">{metric.unit}</span>
+            </div>
+
+            <Odometer
+              value={metric.title === "Motor Speed" ? motorSpeed : (metric.value ?? 0)}
+              max={metric.max}
+              unit={metric.unit}
+              color={metric.color}
+            />
+          </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <style jsx>{`
+        .performance-metrics {
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px);
+          border: 3px solid rgba(34, 197, 94, 0.2);
+          border-radius: 16px;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .performance-metrics.fade-in {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .metrics-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+
+        .metrics-header h3 {
+          margin: 0;
+          color: #22c55e;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+
+        .overall-stats {
+          display: flex;
+          gap: 2rem;
+        }
+
+        .stat-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.8rem;
+          opacity: 0.7;
+        }
+
+        .stat-value {
+          font-size: 1.2rem;
+          font-weight: 700;
+        }
+
+        .stat-value.good {
+          color: #22c55e;
+        }
+
+        .stat-value.warning {
+          color: #f59e0b;
+        }
+
+        .stat-value.critical {
+          color: #ef4444;
+        }
+
+        .metrics-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 1.5rem;
+        }
+
+        .metric-card {
+          background: rgba(255, 255, 255, 0.03);
+          border: 3px solid #C0C1EF;
+          border-radius: 12px;
+          padding: 1.25rem;
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+
+        .metric-card:hover {
+          transform: translateY(-6px) scale(1.03);
+          box-shadow: 0 12px 35px rgba(34, 197, 94, 0.25);
+          border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        .metric-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        .metric-icon {
+          padding: 0.5rem;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.05);
+          transition: transform 0.4s ease;
+        }
+
+        .metric-card:hover .metric-icon {
+          transform: rotate(15deg) scale(1.2);
+          filter: drop-shadow(0 0 4px #22c55e);
+        }
+
+        .icon-animated {
+          transition: transform 0.4s ease;
+        }
+
+        .metric-trend {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          font-size: 0.8rem;
+          font-weight: 600;
+        }
+
+        .metric-content h4 {
+          margin: 0 0 0.5rem 0;
+          font-size: 0.9rem;
+          opacity: 0.8;
+        }
+
+        .metric-value {
+          display: flex;
+          align-items: baseline;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .metric-value .value {
+          font-size: 1.8rem;
+          font-weight: 700;
+        }
+
+        .metric-value .unit {
+          font-size: 0.9rem;
+          opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+          .metrics-header {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          
+          .overall-stats {
+            justify-content: center;
+            gap: 1rem;
+          }
+          
+          .metrics-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+    </div>
+  )
+}

@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.10",
+    "gsap": "^3.13.0",
+    "jspdf": "^3.0.1"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
