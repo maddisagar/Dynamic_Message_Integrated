@@ -12,7 +12,7 @@ export default function Header({ darkMode, toggleTheme, isConnected, currentView
         <div className="header-content">
           <div className="logo-section">
             <div className="logo" onClick={() => setCurrentView("dashboard")} style={{ cursor: 'pointer' }}>
-              <img src="/logo-white.png" alt="Logo" style={{ height: '100%', width: 'auto' }} />
+              <img src="/logo-white.svg" alt="Logo" style={{ height: '100%', width: 'auto' }} />
             </div>
             <div className="title-section">
               <h1>DCU Dashboard</h1>
@@ -147,7 +147,7 @@ export default function Header({ darkMode, toggleTheme, isConnected, currentView
           align-items: center;
           gap: 1rem; /* reduced gap for smaller screens */
           flex: 1 1 200px; /* allow shrinking and growing with a base width */
-          min-width: 150px;
+          min-width: 150px; /* added margin to push logo section further right */
         }
 
         .logo {
@@ -165,6 +165,7 @@ export default function Header({ darkMode, toggleTheme, isConnected, currentView
 
         .title-section {
           display: flex;
+          margin-left: 1rem;
           flex-direction: column;
           justify-content: center;
           min-width: 0;
@@ -198,9 +199,10 @@ export default function Header({ darkMode, toggleTheme, isConnected, currentView
           display: flex;
           gap: 2rem;
           flex: 2 1 400px;
-          justify-content: center;
+          justify-content: flex-end; /* changed from center to flex-end to move buttons right */
           flex-wrap: wrap;
           min-width: 200px;
+          margin-left: 2rem; /* added margin-left to push nav further right */
         }
         .nav-btn span {
           font-size: 0.9rem;
