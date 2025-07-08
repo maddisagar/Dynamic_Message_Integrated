@@ -9,7 +9,7 @@ const Footer = () => {
         color: "white",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "flex-end",
         padding: "1rem",
         gap: "0.5rem",
         fontWeight: "bold",
@@ -17,7 +17,6 @@ const Footer = () => {
         userSelect: "none",
       }}
     >
-      <img src="/logo-white.svg" alt="Logo" style={{ height: "24px", marginRight: "0.75rem" }} />
       <span>ENI-LEM-IN</span>
     </footer>
   );

@@ -12,18 +12,10 @@ export const useData = () => {
   return context
 }
 
-// WebSocket URL from ESP32
-const WEBSOCKET_URL = "ws://192.168.4.1:81"
-
-// CAN Message ID mappings
-const CAN_MESSAGE_IDS = {
-  STATUS_615: 0x615, // DT007_B001_Status
-  TEMP_616: 0x616, // DT008_B002
-  MEASUREMENT_617: 0x617, // DT009_B003
-  FAULT_3: 0x3, // DTFS001_Type
+const getWebSocketUrl = () => {
+  return "ws://192.168.137.57"
 }
 
-// Parse incoming WebSocket JSON data and map to our data structure
 function parseWebSocketData(rawData) {
   try {
     const parsedData = typeof rawData === "string" ? JSON.parse(rawData) : rawData
@@ -36,115 +28,46 @@ function parseWebSocketData(rawData) {
       faults: {},
     }
 
-    // Map DT007_B001_Status (0x615) data
-    if (parsedData.DT007_B001_Status || parsedData["0x615"]) {
-      const statusData = parsedData.DT007_B001_Status || parsedData["0x615"]
-      mappedData.status615 = {
-        EcoBoost: statusData.EcoBoost || false,
-        LimpHomeMode: statusData.LimpHomeMode || false,
-        Brake: statusData.Brake || false,
-        Forward: statusData.Forward || false,
-        Reverse: statusData.Reverse || false,
-        Neutral: statusData.Neutral || false,
-        HillholdMode: statusData.HillholdMode || false,
-        RegenMode: statusData.RegenMode || false,
-        ThrotMode: statusData.ThrotMode || false,
-        AscMode: statusData.AscMode || false,
-        SnsrHealthStatus: statusData.SnsrHealthStatus || false,
-        SnsrHealthStatusDcBus: statusData.SnsrHealthStatusDcBus || false,
-        SnsrHealthStatus12V: statusData.SnsrHealthStatus12V || false,
-        SnsrHealthStatus5V: statusData.SnsrHealthStatus5V || false,
-        SnsrHealthStatusPhBCurr: statusData.SnsrHealthStatusPhBCurr || false,
-        SnsrHealthStatusPhCCurr: statusData.SnsrHealthStatusPhCCurr || false,
-        SnsrHealthStatusThrot1: statusData.SnsrHealthStatusThrot1 || false,
-        SnsrHealthStatusQep: statusData.SnsrHealthStatusQep || false,
-        SnsrHealthStatusCtlrTemp1: statusData.SnsrHealthStatusCtlrTemp1 || false,
-        SnsrHealthStatusMtrTemp: statusData.SnsrHealthStatusMtrTemp || false,
-        SnsrHealthStatusThrot2: statusData.SnsrHealthStatusThrot2 || false,
-        SnsrHealthStatusCtlrTemp2: statusData.SnsrHealthStatusCtlrTemp2 || false,
-        PcModeEnable: statusData.PcModeEnable || false,
-        StartStop: statusData.StartStop || false,
-        DcuControlModeStatus: statusData.DcuControlModeStatus || false,
-        IdleShutdown: statusData.IdleShutdown || false,
-      }
+    // Define keys for each category
+    const statusKeys = [
+      "EcoBoost", "LimpHomeMode", "Brake", "Forward", "Reverse", "Neutral", "HillholdMode", "RegenMode",
+      "ThrotMode", "AscMode", "SnsrHealthStatus", "SnsrHealthStatusDcBus", "SnsrHealthStatus12V",
+      "SnsrHealthStatus5V", "SnsrHealthStatusPhBCurr", "SnsrHealthStatusPhCCurr", "SnsrHealthStatusThrot1",
+      "SnsrHealthStatusQep", "SnsrHealthStatusCtlrTemp1", "SnsrHealthStatusMtrTemp", "SnsrHealthStatusThrot2",
+      "SnsrHealthStatusCtlrTemp2", "PcModeEnable", "StartStop", "DcuControlModeStatus", "IdleShutdown"
+    ]
+
+    const tempKeys = ["CtlrTemp1", "CtlrTemp2", "CtlrTemp", "MtrTemp"]
+
+    const measurementKeys = ["AcCurrMeaRms", "DcCurrEstd", "DcBusVolt", "MtrSpd", "ThrotVolt"]
+
+    const faultKeys = [
+      "CanErr", "DcBusOvErr", "DcBusSnrScFlt", "DcBusUvErr", "MtrTempCutbackLmtErr", "CtlrTempCutbackLmtErr",
+      "MtrTempCutoffLmtErr", "CtlrTempCutoffLmtErr", "MtrTempSnsrOcFlt", "CtlrTempSnsrOcFlt", "MtrTempSnsrScFlt",
+      "CtlrTempSnsrScFlt", "PhBCurrSnsrOverCurrFlt", "PhBCurrSnsrScCurrFlt", "PhBCurrSnsrScFlt", "DcBusSnsrOcFlt",
+      "PhBCurrSnsrOcFlt", "PhCCurrSnsrOcFlt", "PhCCurrSnsrOverCurrFlt", "PhCCurrSnsrScCurrFlt", "PhCCurrSnsrScFlt",
+      "QepFlt", "SocLowLmtErr", "ThrotLowLmtErr", "ThrotRedunErr", "ThrotStuckErr", "ThrotUpLmtErr",
+      "UnexpectedParkSenseHighErr", "UnintendedAccelerationErr", "UnintendedDecelerationErr", "ThrotSnsrOcFlt",
+      "ThrotSnsrScFlt", "FnrErr", "FnrWarn", "Supply12SnsrOcFlt", "Supply5SnsrOcFlt", "Supply12UvErr", "Supply5UvErr",
+      "HwOverCurrFlt", "Type_0_Err", "Type_1_Err", "Type_2_Err", "Type_3_Err", "Type_4_Err", "QepFlt_2",
+      "PhACurrSnsrOverCurrFlt", "PhACurrSnsrScCurrFlt", "DcBusLvErr"
+    ]
+
+    // Assign values to mappedData based on keys
+    for (const key of statusKeys) {
+      mappedData.status615[key] = parsedData[key] !== undefined ? parsedData[key] : false
     }
 
-    // Map DT008_B002 (0x616) temperature data
-    if (parsedData.DT008_B002 || parsedData["0x616"]) {
-      const tempData = parsedData.DT008_B002 || parsedData["0x616"]
-      mappedData.temp616 = {
-        CtlrTemp1: Number.parseFloat(tempData.CtlrTemp1) || 0,
-        CtlrTemp2: Number.parseFloat(tempData.CtlrTemp2) || 0,
-        CtlrTemp: Number.parseFloat(tempData.CtlrTemp) || 0,
-        MtrTemp: Number.parseFloat(tempData.MtrTemp) || 0,
-      }
+    for (const key of tempKeys) {
+      mappedData.temp616[key] = parsedData[key] !== undefined ? Number.parseFloat(parsedData[key]) || 0 : 0
     }
 
-    // Map DT009_B003 (0x617) measurement data
-    if (parsedData.DT009_B003 || parsedData["0x617"]) {
-      const measurementData = parsedData.DT009_B003 || parsedData["0x617"]
-      mappedData.measurement617 = {
-        AcCurrMeaRms: Number.parseFloat(measurementData.AcCurrMeaRms) || 0,
-        DcCurrEstd: Number.parseFloat(measurementData.DcCurrEstd) || 0,
-        DcBusVolt: Number.parseFloat(measurementData.DcBusVolt) || 0,
-        MtrSpd: Number.parseFloat(measurementData.MtrSpd) || 0,
-        ThrotVolt: Number.parseFloat(measurementData.ThrotVolt) || 0,
-      }
+    for (const key of measurementKeys) {
+      mappedData.measurement617[key] = parsedData[key] !== undefined ? Number.parseFloat(parsedData[key]) || 0 : 0
     }
 
-    // Map DTFS001_Type (0x3) fault data
-    if (parsedData.DTFS001_Type || parsedData["0x3"]) {
-      const faultData = parsedData.DTFS001_Type || parsedData["0x3"]
-      mappedData.faults = {
-        CanErr: faultData.CanErr || false,
-        DcBusOvErr: faultData.DcBusOvErr || false,
-        DcBusSnrScFlt: faultData.DcBusSnrScFlt || false,
-        DcBusUvErr: faultData.DcBusUvErr || false,
-        MtrTempCutbackLmtErr: faultData.MtrTempCutbackLmtErr || false,
-        CtlrTempCutbackLmtErr: faultData.CtlrTempCutbackLmtErr || false,
-        MtrTempCutoffLmtErr: faultData.MtrTempCutoffLmtErr || false,
-        CtlrTempCutoffLmtErr: faultData.CtlrTempCutoffLmtErr || false,
-        MtrTempSnsrOcFlt: faultData.MtrTempSnsrOcFlt || false,
-        CtlrTempSnsrOcFlt: faultData.CtlrTempSnsrOcFlt || false,
-        MtrTempSnsrScFlt: faultData.MtrTempSnsrScFlt || false,
-        CtlrTempSnsrScFlt: faultData.CtlrTempSnsrScFlt || false,
-        PhBCurrSnsrOverCurrFlt: faultData.PhBCurrSnsrOverCurrFlt || false,
-        PhBCurrSnsrScCurrFlt: faultData.PhBCurrSnsrScCurrFlt || false,
-        PhBCurrSnsrScFlt: faultData.PhBCurrSnsrScFlt || false,
-        DcBusSnsrOcFlt: faultData.DcBusSnsrOcFlt || false,
-        PhBCurrSnsrOcFlt: faultData.PhBCurrSnsrOcFlt || false,
-        PhCCurrSnsrOcFlt: faultData.PhCCurrSnsrOcFlt || false,
-        PhCCurrSnsrOverCurrFlt: faultData.PhCCurrSnsrOverCurrFlt || false,
-        PhCCurrSnsrScCurrFlt: faultData.PhCCurrSnsrScCurrFlt || false,
-        PhCCurrSnsrScFlt: faultData.PhCCurrSnsrScFlt || false,
-        QepFlt: faultData.QepFlt || false,
-        SocLowLmtErr: faultData.SocLowLmtErr || false,
-        ThrotLowLmtErr: faultData.ThrotLowLmtErr || false,
-        ThrotRedunErr: faultData.ThrotRedunErr || false,
-        ThrotStuckErr: faultData.ThrotStuckErr || false,
-        ThrotUpLmtErr: faultData.ThrotUpLmtErr || false,
-        UnexpectedParkSenseHighErr: faultData.UnexpectedParkSenseHighErr || false,
-        UnintendedAccelerationErr: faultData.UnintendedAccelerationErr || false,
-        UnintendedDecelerationErr: faultData.UnintendedDecelerationErr || false,
-        ThrotSnsrOcFlt: faultData.ThrotSnsrOcFlt || false,
-        ThrotSnsrScFlt: faultData.ThrotSnsrScFlt || false,
-        FnrErr: faultData.FnrErr || false,
-        FnrWarn: faultData.FnrWarn || false,
-        Supply12SnsrOcFlt: faultData.Supply12SnsrOcFlt || false,
-        Supply5SnsrOcFlt: faultData.Supply5SnsrOcFlt || false,
-        Supply12UvErr: faultData.Supply12UvErr || false,
-        Supply5UvErr: faultData.Supply5UvErr || false,
-        HwOverCurrFlt: faultData.HwOverCurrFlt || false,
-        Type_0_Err: faultData.Type_0_Err || false,
-        Type_1_Err: faultData.Type_1_Err || false,
-        Type_2_Err: faultData.Type_2_Err || false,
-        Type_3_Err: faultData.Type_3_Err || false,
-        Type_4_Err: faultData.Type_4_Err || false,
-        QepFlt_2: faultData.QepFlt_2 || false,
-        PhACurrSnsrOverCurrFlt: faultData.PhACurrSnsrOverCurrFlt || false,
-        PhACurrSnsrScCurrFlt: faultData.PhACurrSnsrScCurrFlt || false,
-        DcBusLvErr: faultData.DcBusLvErr || false,
-      }
+    for (const key of faultKeys) {
+      mappedData.faults[key] = parsedData[key] !== undefined ? parsedData[key] : false
     }
 
     return mappedData
@@ -450,12 +373,13 @@ export const DataProvider = ({ children }) => {
     let reconnectTimeoutId
 
     const connect = () => {
-      console.log(`Attempting to connect to WebSocket: ${WEBSOCKET_URL}`)
-      ws = new WebSocket(WEBSOCKET_URL)
+      const url = getWebSocketUrl()
+      console.log(`Attempting to connect to WebSocket: ${url}`)
+      ws = new WebSocket(url)
 
       ws.onopen = () => {
         setIsConnected(true)
-        console.log("WebSocket connected to ESP32:", WEBSOCKET_URL)
+        console.log("WebSocket connected to ESP32:", url)
         reconnectInterval = 1000 // reset reconnect interval on successful connection
       }
 

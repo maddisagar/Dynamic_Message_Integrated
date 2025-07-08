@@ -1,0 +1,7 @@
+const CAN_MESSAGE_IDS = {
+  STATUS_615: 0x615, // DT007_B001_Status
+  TEMP_616: 0x616, // DT008_B002
+  MEASUREMENT_617: 0x617, // DT009_B003
+  FAULT_3: 0x3, // DTFS001_Type
+}
+=======

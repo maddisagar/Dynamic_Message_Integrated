@@ -95,7 +95,7 @@ export default function GraphContainer({ mode, fullView = false, darkMode = true
           .graph-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(34, 197, 94, 0.2);
+            border: 4px solid rgba(34, 197, 94, 0.2);
             border-radius: 16px;
             padding: 1rem;
             transition: all 0.3s ease;
