@@ -39,7 +39,7 @@ export default function PerformanceMetrics() {
     const motorTemp = currentData.temp616.MtrTemp
     const voltage = currentData.measurement617.DcBusVolt
     const current = currentData.measurement617.AcCurrMeaRms
-    const speed = currentData.measurement617.Mtrspd
+    const speed = currentData.measurement617.MtrSpd
 
     let score = 100
 
@@ -68,7 +68,7 @@ export default function PerformanceMetrics() {
   const metrics = [
     {
       title: "Motor Speed",
-      value: currentData.measurement617.Mtrspd,
+      value: currentData.measurement617.MtrSpd,
       unit: "RPM",
       trend: calculateTrend("Mtrspd", "measurement617"),
       icon: Gauge,

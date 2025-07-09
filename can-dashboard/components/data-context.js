@@ -13,7 +13,7 @@ export const useData = () => {
 }
 
 const getWebSocketUrl = () => {
-  return "ws://192.168.137.57"
+  return "ws://192.168.137.57:81"
 }
 
 function parseWebSocketData(rawData) {
@@ -371,6 +371,7 @@ export const DataProvider = ({ children }) => {
     let reconnectInterval = 1000
     let intervalId
     let reconnectTimeoutId
+    let hasConnectedOnce = false
 
     const connect = () => {
       const url = getWebSocketUrl()
