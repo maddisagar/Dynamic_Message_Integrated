@@ -387,15 +387,25 @@ export const DataProvider = ({ children }) => {
       ws.onmessage = (event) => {
         try {
           console.log("Raw WebSocket data received:", event.data)
-          const parsedData = parseWebSocketData(event.data)
+          // Check if event.data is valid JSON before parsing
+          let parsedData = null
+          try {
+            parsedData = JSON.parse(event.data)
+          } catch (e) {
+            console.warn("Received non-JSON WebSocket message, ignoring:", event.data)
+          }
 
           if (parsedData) {
-            console.log("Parsed WebSocket data:", parsedData)
-            setCurrentData(parsedData)
-            setHistory((prev) => {
-              const updated = [...prev, parsedData]
-              return updated.slice(-100) // Keep last 100 entries
-            })
+            parsedData = parseWebSocketData(parsedData)
+
+            if (parsedData) {
+              console.log("Parsed WebSocket data:", parsedData)
+              setCurrentData(parsedData)
+              setHistory((prev) => {
+                const updated = [...prev, parsedData]
+                return updated.slice(-100) // Keep last 100 entries
+              })
+            }
           }
         } catch (error) {
           console.error("Error processing WebSocket data:", error)
