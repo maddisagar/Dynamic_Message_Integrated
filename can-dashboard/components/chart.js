@@ -28,16 +28,40 @@ const Chart = ({ data, metric, metrics, height = 200, overlay = false, darkMode 
 
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`)
 
-    const parseTime = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ")
+    const parseTime = d3.isoParse
 
-    const filteredData = data.map((item) => ({
+    let filteredData = data.map((item) => ({
       ...item,
       timestamp: parseTime(item.timestamp),
     }))
 
+    // Filter out data points with invalid timestamps
+    filteredData = filteredData.filter((d) => d.timestamp !== null && !isNaN(d.timestamp))
+
+    // If no valid data after filtering, show message and return
+    if (filteredData.length === 0) {
+      svg
+        .append("text")
+        .attr("x", "50%")
+        .attr("y", "50%")
+        .attr("text-anchor", "middle")
+        .text("No valid data available")
+        .style("fill", darkMode ? "white" : "black")
+        .style("font-size", "1rem")
+      return
+    }
+
+    // Calculate x domain safely
+    let xDomain = d3.extent(filteredData, (d) => d.timestamp)
+    if (!xDomain[0] || !xDomain[1] || isNaN(xDomain[0]) || isNaN(xDomain[1])) {
+      // Provide fallback domain to prevent NaN
+      const now = new Date()
+      xDomain = [new Date(now.getTime() - 1000 * 60 * 60), now] // last 1 hour
+    }
+
     const x = d3
       .scaleTime()
-      .domain(d3.extent(filteredData, (d) => d.timestamp))
+      .domain(xDomain)
       .range([0, width])
 
     const y = d3.scaleLinear().range([chartHeight, 0])
@@ -53,7 +77,12 @@ const Chart = ({ data, metric, metrics, height = 200, overlay = false, darkMode 
           yAxisLabel = m.unit
         }
       })
-      y.domain([d3.min(allValues, (v) => v) * 0.9, d3.max(allValues, (v) => v) * 1.1])
+      // Filter out invalid values before calculating min and max for overlay
+      const allValuesFiltered = allValues.filter((v) => typeof v === "number" && !isNaN(v))
+      const minOverlay = allValuesFiltered.length > 0 ? d3.min(allValuesFiltered) : 0
+      const maxOverlay = allValuesFiltered.length > 0 ? d3.max(allValuesFiltered) : 1
+
+      y.domain([minOverlay * 0.9, maxOverlay * 1.1])
 
       metrics.forEach((m) => {
         const line = d3
@@ -65,7 +94,7 @@ const Chart = ({ data, metric, metrics, height = 200, overlay = false, darkMode 
           })
           .defined((d) => {
             const value = d[m.category]?.[m.key]
-            return typeof value === "number"
+            return typeof value === "number" && d.timestamp !== null && !isNaN(d.timestamp)
           })
 
         g.append("path")
@@ -77,14 +106,15 @@ const Chart = ({ data, metric, metrics, height = 200, overlay = false, darkMode 
       })
     } else if (metric) {
       // Single metric chart
-      y.domain([
-        d3.min(filteredData, (d) =>
-          d[metric.category]?.[metric.key] !== undefined ? d[metric.category]?.[metric.key] : null,
-        ) * 0.9,
-        d3.max(filteredData, (d) =>
-          d[metric.category]?.[metric.key] !== undefined ? d[metric.category]?.[metric.key] : null,
-        ) * 1.1,
-      ])
+      // Filter out invalid values before calculating min and max
+      const values = filteredData
+        .map((d) => d[metric.category]?.[metric.key])
+        .filter((v) => typeof v === "number" && !isNaN(v))
+
+      const minValue = values.length > 0 ? d3.min(values) : 0
+      const maxValue = values.length > 0 ? d3.max(values) : 1
+
+      y.domain([minValue * 0.9, maxValue * 1.1])
       yAxisLabel = metric.unit
 
       const line = d3
@@ -94,10 +124,10 @@ const Chart = ({ data, metric, metrics, height = 200, overlay = false, darkMode 
           const value = d[metric.category]?.[metric.key]
           return typeof value === "number" ? y(value) : null
         })
-        .defined((d) => {
-          const value = d[metric.category]?.[metric.key]
-          return typeof value === "number"
-        })
+          .defined((d) => {
+            const value = d[metric.category]?.[metric.key]
+            return typeof value === "number" && d.timestamp !== null && !isNaN(d.timestamp)
+          })
 
       g.append("path")
         .datum(filteredData)
